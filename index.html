@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Mimo</title>
+    <style>
+        :root {
+            --roxo-claro: #e6e6fa;
+            --roxo-escuro: #4b0082;
+            --roxo: #9370db;
+            --roxo-escuro2: #663399;
+            --roxo-escuro3: #4b0082;
+            --destaque: #9370db;
+            --branco: #ffffff;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, var(--roxo-claro), var(--roxo));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+        }
+        
+        .container {
+            background: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(147, 112, 219, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h2 {
+            margin: 15px 0;
+            color: var(--roxo-escuro);
+            position: relative;
+            z-index: 1;
+            font-size: 1.5rem;
+        }
+        
+        input[type="number"], textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 2px solid #b19cd9;
+            border-radius: 8px;
+            font-size: 16px;
+            color: var(--roxo-escuro3);
+            background-color: #f9f9ff;
+            transition: all 0.3s;
+            z-index: 1;
+            position: relative;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        input[type="number"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--roxo);
+            box-shadow: 0 0 10px rgba(147, 112, 219, 0.3);
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--roxo), var(--roxo-escuro2));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 51, 153, 0.3);
+            margin-bottom: 10px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 51, 153, 0.4);
+        }
+        
+        button.secondary {
+            background: linear-gradient(to right, var(--roxo-escuro2), var(--roxo-escuro3));
+        }
+        
+        .resultado {
+            margin-top: 15px;
+            background: #f0f0ff;
+            padding: 12px;
+            border-radius: 8px;
+            word-break: break-word;
+            display: none;
+            border: 1px dashed #9370db;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .resultado p {
+            color: var(--roxo-escuro3);
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        .resultado img {
+            margin: 10px auto;
+            width: 100%;
+            max-width: 200px;
+            aspect-ratio: 1/1;
+            border-radius: 5px;
+            border: 1px solid #b19cd9;
+            display: block;
+            object-fit: cover;
+        }
+        
+        /* Bolha do PIX (sem efeitos de hover) */
+        .pix-bubble {
+            background: #fff;
+            border: 2px solid #9370db;
+            border-radius: 12px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--roxo-escuro3);
+            overflow-x: auto;
+            white-space: nowrap;
+            text-align: left;
+            position: relative;
+        }
+        
+        .pix-bubble::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            border-width: 0 10px 10px;
+            border-style: solid;
+            border-color: #9370db transparent;
+        }
+        
+        .pix-bubble::after {
+            content: "";
+            position: absolute;
+            top: -7px;
+            left: 22px;
+            border-width: 0 8px 8px;
+            border-style: solid;
+            border-color: #fff transparent;
+        }
+        
+        .erro {
+            color: var(--roxo-escuro);
+            margin-top: 10px;
+            font-weight: bold;
+            z-index: 1;
+            position: relative;
+            font-size: 0.9rem;
+        }
+        
+        /* Container da foto (sem efeitos de movimento) */
+        .profile-container {
+            width: 100%;
+            aspect-ratio: 1/1;
+            max-width: 300px;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(147, 112, 219, 0.3);
+            background: #f9f9ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .optional-label {
+            color: var(--roxo-escuro3);
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+                margin: 10px 0;
+            }
+            
+            .profile-container {
+                max-width: 250px;
+            }
+            
+            input[type="number"], textarea {
+                padding: 10px 12px;
+                font-size: 15px;
+                margin-bottom: 12px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 15px;
+            }
+            
+            .resultado {
+                padding: 10px;
+            }
+            
+            .resultado img {
+                max-width: 180px;
+            }
+            
+            .pix-bubble {
+                font-size: 11px;
+                padding: 8px 12px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .profile-container {
+                max-width: 220px;
+            }
+            
+            .resultado img {
+                max-width: 160px;
+            }
+            
+            .pix-bubble {
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="profile-container">
+        <img src="img/lara.webp" alt="Foto de perfil" class="profile-pic">
+    </div>
+    <h2>Enviar Mimo</h2>
+    <label for="valor" style="color: var(--roxo-escuro3);">Valor do mimo (R$):</label>
+    <input type="number" id="valor" step="0.01" min="0.50" placeholder="Ex: 10.00" required>
+    
+    <label for="mensagem" class="optional-label">Mensagem (opcional):</label>
+    <textarea id="mensagem" placeholder="Deixe uma mensagem carinhosa..."></textarea>
+
+    <button id="gerarBtn" onclick="gerarPix()">Gerar QR Code</button>
+
+    <div class="resultado" id="resultado">
+        <p><strong>QR Code:</strong></p>
+        <img id="imagemPix" src="" alt="QR Code PIX">
+        <p><strong>Copia e Cola:</strong></p>
+        <div class="pix-bubble" id="codigoPix"></div>
+        <button id="copiarBtn" class="secondary" onclick="copiarPix()">📋 Copiar Código PIX</button>
+    </div>
+
+    <div class="erro" id="erro"></div>
+</div>
+
+<script>
+function gerarPix() {
+    const valor = document.getElementById('valor').value;
+    const mensagem = document.getElementById('mensagem').value;
+    const resultado = document.getElementById('resultado');
+    const codigoPix = document.getElementById('codigoPix');
+    const imagemPix = document.getElementById('imagemPix');
+    const erro = document.getElementById('erro');
+    const gerarBtn = document.getElementById('gerarBtn');
+
+    resultado.style.display = 'none';
+    codigoPix.innerHTML = '';
+    imagemPix.src = '';
+    erro.innerHTML = '';
+
+    if (valor < 0.50) {
+        erro.innerHTML = 'O valor mínimo é R$0,50.';
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('valor', valor);
+    formData.append('mensagem', mensagem);
+
+    fetch('gerar_pix.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(dados => {
+        if (dados.status === 'ok') {
+            resultado.style.display = 'block';
+            codigoPix.innerText = dados.qrcode;
+            imagemPix.src = dados.qrcode_base64;
+            gerarBtn.classList.add('hidden');
+        } else {
+            erro.innerHTML = dados.mensagem;
+        }
+    })
+    .catch(() => {
+        erro.innerHTML = 'Erro ao gerar o QR Code. Tente novamente.';
+    });
+}
+
+function copiarPix() {
+    const codigoPix = document.getElementById('codigoPix');
+    const copiarBtn = document.getElementById('copiarBtn');
+    
+    navigator.clipboard.writeText(codigoPix.innerText)
+        .then(() => {
+            copiarBtn.textContent = '✓ Código Copiado!';
+            setTimeout(() => {
+                copiarBtn.textContent = '📋 Copiar Código PIX';
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Erro ao copiar: ', err);
+        });
+}
+
+// Adicionar evento de toque para mobile
+document.addEventListener('touchstart', function() {}, {passive: true});
+</script>
+
+</body>
+</html>
