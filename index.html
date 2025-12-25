@@ -318,13 +318,17 @@ function gerarPix() {
         return;
     }
 
-    const formData = new FormData();
-    formData.append('valor', valor);
-    formData.append('mensagem', mensagem);
+    const dados = {
+        valor: valor,
+        mensagem: mensagem
+    };
 
-    fetch('gerar_pix.php', {
+    fetch('/api/gerar-pix', {
         method: 'POST',
-        body: formData
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dados)
     })
     .then(response => response.json())
     .then(dados => {
